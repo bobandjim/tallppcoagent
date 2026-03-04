@@ -1,0 +1,123 @@
+# Princess Peigh Adventures — Outbound Automation System
+# All secrets must be set via environment variables; never hardcode credentials here.
+
+brand:
+  show_name: "Princess Peigh's Sword Fighting Tea Party"
+  brand_name: "Princess Peigh Adventures"
+  company_name: "Tall People Performing Company"
+  sender_name: "Zachary Gartrell"
+  physical_address: "# Replace with actual mailing address"
+  social_handle: "@PrincessPeighadventures"
+  website: "# Replace with actual website"
+
+targeting:
+  geography:
+    mode: regional          # regional | multi_state | national
+    states: []              # e.g. ["NY", "NJ", "PA"] — fill in at runtime
+  venue:
+    seat_min: 100
+    seat_max: 400
+    types:
+      - community_theater
+      - performing_arts_center
+      - municipal_cultural_venue
+      - library
+      - arts_nonprofit
+
+zoho:
+  smtp_host: "smtp.zoho.com"
+  smtp_port: 587
+  use_tls: true
+  email: "${ZOHO_EMAIL}"         # set in .env
+  password: "${ZOHO_PASSWORD}"   # set in .env
+  reply_to: "${ZOHO_REPLY_TO}"   # set in .env (can be same as email)
+
+deliverability:
+  max_sends_per_day: 50          # conservative during warm-up; increase per schedule
+  delay_between_sends_seconds: 90
+  warm_up_schedule:              # increase daily cap week by week
+    week_1: 10
+    week_2: 25
+    week_3: 50
+    week_4: 100
+  current_week: 1                # update as domain warms
+
+crm:
+  template_url: "https://magotalent.blob.core.windows.net/magobiz/import.xlsx"
+  leads_file: "data/crm/leads.xlsx"
+  suppression_file: "config/suppression_list.csv"
+  audit_db: "data/audit.db"
+
+# Column mapping: our CRM field → Excel column header
+# Sheet: Companies (venues)
+column_map:
+  companies:
+    lead_id: "UniqueId"
+    company: "Name"
+    website: "Website"
+    segment: "Record Type"
+    phone: "Phone"
+    city: "Billing City"
+    state: "Billing State"
+    notes: "Notes"
+  contacts:
+    contact_id: "UniqueId"
+    first_name: "First Name"
+    last_name: "Last Name"
+    company_id: "Company UniqueId"
+    source: "Lead Source"
+    phone: "Work Phone"
+    email: "Email"
+    email_opt_out: "Email Opt Out"
+    title: "Title"
+    sequence_id: "Custom1"
+    step_number: "Custom2"
+    email_open: "Custom3"
+    email_click: "Custom4"
+    email_reply: "Custom5"
+    reply_category: "Custom6"
+    last_updated: "Custom7"
+    audit_trail_id: "Custom8"
+  gigs_leads:
+    gig_lead_id: "UniqueId"
+    name: "Name"
+    status: "Status"
+    company_id: "Company UniqueId"
+    contact_id: "Primary Contact UniqueId"
+    source: "Lead Source"
+    show_date: "Show Date"
+    venue_name: "Venue Name"
+    fee: "Fee"
+    projected_fee: "Quote1"
+    outcome: "Custom1"
+    meeting_booked: "Custom2"
+    show_booked: "Custom3"
+    send_time: "Custom4"
+  calls:
+    call_id: "UniqueId"
+    subject: "Subject"
+    call_datetime: "CallDateTime"
+    status: "Call Status"
+    notes: "Call Notes"
+    gig_id: "Related Gig"
+    contact_id: "Related Contact"
+    company_id: "Related Company"
+  notes:
+    note_id: "UniqueId"
+    subject: "Subject"
+    date: "Date"
+    notes: "Notes"
+    gig_id: "Related Gig"
+    contact_id: "Related Contact"
+    company_id: "Related Company"
+
+sequences:
+  default_sequence_id: "theater_outreach_v1"
+  steps: 4
+  delays_days: [0, 5, 9, 14]
+  templates_dir: "templates/email"
+
+# Human review gate — MUST be set to true before any live sends.
+# Run: python3 run_sequence.py --review-mode
+# Review all 4 templates printed to stdout, then set this to true.
+template_approved: false

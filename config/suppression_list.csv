@@ -1,0 +1,3 @@
+email,reason,suppressed_at
+# Add opt-outs and bounces here. One row per suppressed address.
+# Format: email address (lowercase), reason (OPT_OUT|HARD_BOUNCE|SOFT_BOUNCE|MANUAL), ISO 8601 timestamp
