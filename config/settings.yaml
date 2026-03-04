@@ -13,7 +13,7 @@ brand:
 targeting:
   geography:
     mode: regional          # regional | multi_state | national
-    states: []              # e.g. ["NY", "NJ", "PA"] — fill in at runtime
+    states: ["NY", "NJ", "PA", "CT"]  # Wave 1 regional targets
   venue:
     seat_min: 100
     seat_max: 400
