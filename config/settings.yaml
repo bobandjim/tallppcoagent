@@ -6,16 +6,16 @@ brand:
   brand_name: "Princess Peigh Adventures"
   company_name: "Tall People Performing Company"
   sender_name: "Zachary Gartrell"
-  physical_address: "# Replace with actual mailing address"
+  physical_address: "119 Westside Ave Freeport, NY 11520"
   social_handle: "@PrincessPeighadventures"
-  website: "# Replace with actual website"
+  website: "https://tallppco.com"
 
 targeting:
   geography:
     mode: regional          # regional | multi_state | national
-    states: []              # e.g. ["NY", "NJ", "PA"] — fill in at runtime
+    states: ["NY","NJ","PA","CT"]              # e.g. ["NY", "NJ", "PA"] — fill in at runtime
   venue:
-    seat_min: 100
+    seat_min: 50
     seat_max: 400
     types:
       - community_theater
