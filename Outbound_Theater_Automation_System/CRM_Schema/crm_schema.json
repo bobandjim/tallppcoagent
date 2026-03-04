@@ -1,0 +1,137 @@
+{
+  "_comment": "CRM schema definition for Princess Peigh Adventures outbound system. Maps to import.xlsx 6-sheet format.",
+  "_template_url": "https://magotalent.blob.core.windows.net/magobiz/import.xlsx",
+  "sheets": {
+    "Companies": {
+      "description": "Venues and organizations. Maps to VenueRecord in src/crm/schema.py",
+      "primary_key": "UniqueId",
+      "fields": {
+        "UniqueId":       { "type": "integer", "required": true,  "maps_to": "lead_id" },
+        "Name":           { "type": "string",  "required": true,  "maps_to": "company" },
+        "Website":        { "type": "string",  "required": false, "maps_to": "website" },
+        "Record Type":    { "type": "string",  "required": false, "maps_to": "segment",
+                            "valid_values": ["Community Theater", "Performing Arts Center", "Municipal Cultural Venue", "Library", "Arts Nonprofit", "Agent", "Organization", "Other"] },
+        "Phone":          { "type": "string",  "required": false, "maps_to": "phone" },
+        "Billing City":   { "type": "string",  "required": false, "maps_to": "city" },
+        "Billing State":  { "type": "string",  "required": false, "maps_to": "state", "format": "2-char uppercase" },
+        "Notes":          { "type": "string",  "required": false, "maps_to": "notes" },
+        "Custom1":        { "type": "string",  "required": false, "maps_to": "seating_capacity_tier",
+                            "valid_values": ["Small", "Mid", "Large"] },
+        "Custom2":        { "type": "string",  "required": false, "maps_to": "mission_excerpt", "max_length": 120 },
+        "Custom3":        { "type": "string",  "required": false, "maps_to": "programming_focus",
+                            "valid_values": ["Family", "Education", "Community", "Arts", "Mixed"] },
+        "Custom4":        { "type": "string",  "required": false, "maps_to": "venue_name" }
+      }
+    },
+    "Contacts": {
+      "description": "Individual contacts at venues. Maps to ContactRecord in src/crm/schema.py",
+      "primary_key": "UniqueId",
+      "foreign_keys": { "Company UniqueId": "Companies.UniqueId" },
+      "dedup_key": "Email (normalized lowercase)",
+      "fields": {
+        "UniqueId":        { "type": "integer", "required": true,  "maps_to": "contact_id" },
+        "First Name":      { "type": "string",  "required": false, "maps_to": "first_name" },
+        "Last Name":       { "type": "string",  "required": false, "maps_to": "last_name" },
+        "Company UniqueId":{ "type": "integer", "required": false, "maps_to": "company_id" },
+        "Lead Source":     { "type": "string",  "required": false, "maps_to": "source",
+                             "valid_values": ["Manual Research", "Referral", "Website", "Cold Call", "Social Media", "Existing Customer", "Conference", "Directory", "Other"] },
+        "Work Phone":      { "type": "string",  "required": false, "maps_to": "phone" },
+        "Email":           { "type": "string",  "required": false, "maps_to": "email", "format": "lowercase email address" },
+        "Email Opt Out":   { "type": "string",  "required": false, "maps_to": "email_opt_out",
+                             "valid_values": ["Yes", "No"], "default": "No" },
+        "Title":           { "type": "string",  "required": false, "maps_to": "title" },
+        "Custom1":         { "type": "string",  "required": false, "maps_to": "sequence_id",
+                             "example": "theater_outreach_v1" },
+        "Custom2":         { "type": "integer", "required": false, "maps_to": "step_number",
+                             "valid_range": [0, 4], "note": "0=not started, 1-4=steps sent" },
+        "Custom3":         { "type": "string",  "required": false, "maps_to": "email_open",
+                             "valid_values": ["Yes", "No"], "default": "No" },
+        "Custom4":         { "type": "string",  "required": false, "maps_to": "email_click",
+                             "valid_values": ["Yes", "No"], "default": "No" },
+        "Custom5":         { "type": "string",  "required": false, "maps_to": "email_reply",
+                             "valid_values": ["Yes", "No"], "default": "No" },
+        "Custom6":         { "type": "string",  "required": false, "maps_to": "reply_category",
+                             "valid_values": ["Interested", "Budget Question", "Programming Window Question", "Referral", "Not a Fit", "Opt-Out", "Out of Office", "Bounce", ""] },
+        "Custom7":         { "type": "string",  "required": false, "maps_to": "last_updated", "format": "ISO 8601" },
+        "Custom8":         { "type": "string",  "required": false, "maps_to": "audit_trail_id", "format": "UUID4" }
+      }
+    },
+    "Gigs_Leads": {
+      "description": "Booking leads and confirmed shows. Status=Lead (pipeline) or Status=Gig (booked). Maps to GigLeadRecord.",
+      "primary_key": "UniqueId",
+      "foreign_keys": {
+        "Company UniqueId": "Companies.UniqueId",
+        "Primary Contact UniqueId": "Contacts.UniqueId"
+      },
+      "fields": {
+        "UniqueId":                    { "type": "integer", "required": true,  "maps_to": "gig_lead_id" },
+        "Name":                        { "type": "string",  "required": false, "maps_to": "name", "example": "Riverside Arts Center — Spring 2026" },
+        "Status":                      { "type": "string",  "required": false, "maps_to": "status",
+                                         "valid_values": ["Gig", "Lead"], "note": "Gig=booked show, Lead=pipeline" },
+        "Company UniqueId":            { "type": "integer", "required": false, "maps_to": "company_id" },
+        "Primary Contact UniqueId":    { "type": "integer", "required": false, "maps_to": "contact_id" },
+        "Lead Source":                 { "type": "string",  "required": false, "maps_to": "source" },
+        "Show Date":                   { "type": "datetime","required": false, "maps_to": "show_date" },
+        "Venue Name":                  { "type": "string",  "required": false, "maps_to": "venue_name" },
+        "Fee":                         { "type": "float",   "required": false, "maps_to": "final_fee", "format": "USD" },
+        "Deposit":                     { "type": "float",   "required": false, "maps_to": "deposit" },
+        "Contract sent":               { "type": "string",  "required": false, "maps_to": "contract_sent" },
+        "Contract Received":           { "type": "string",  "required": false, "maps_to": "contract_received" },
+        "Quote1":                      { "type": "float",   "required": false, "maps_to": "projected_fee", "format": "USD" },
+        "Custom1":                     { "type": "string",  "required": false, "maps_to": "outcome",
+                                         "valid_values": ["In Progress", "Interested", "Not a Fit", "Booked", "Lost", "Bounced", "Suppressed", ""] },
+        "Custom2":                     { "type": "string",  "required": false, "maps_to": "meeting_booked",
+                                         "valid_values": ["Yes", "No"], "default": "No" },
+        "Custom3":                     { "type": "string",  "required": false, "maps_to": "show_booked",
+                                         "valid_values": ["Yes", "No"], "default": "No" },
+        "Custom4":                     { "type": "string",  "required": false, "maps_to": "send_time", "format": "ISO 8601" }
+      }
+    },
+    "Calls": {
+      "description": "Call log. Maps to CallRecord. Used after a reply triggers a call.",
+      "primary_key": "UniqueId",
+      "foreign_keys": {
+        "Related Gig": "Gigs_Leads.UniqueId",
+        "Related Contact": "Contacts.UniqueId",
+        "Related Company": "Companies.UniqueId"
+      },
+      "fields": {
+        "UniqueId":        { "type": "integer",  "required": true  },
+        "Subject":         { "type": "string",   "required": false },
+        "CallDateTime":    { "type": "datetime", "required": false },
+        "Call Status":     { "type": "string",   "required": false,
+                             "valid_values": ["Held", "Planned", "Not Held"] },
+        "Call Notes":      { "type": "string",   "required": false },
+        "Related Gig":     { "type": "integer",  "required": false },
+        "Related Contact": { "type": "integer",  "required": false },
+        "Related Company": { "type": "integer",  "required": false }
+      }
+    },
+    "Notes": {
+      "description": "General notes. Maps to NoteRecord.",
+      "primary_key": "UniqueId",
+      "fields": {
+        "UniqueId":        { "type": "integer", "required": true  },
+        "Subject":         { "type": "string",  "required": false },
+        "Date":            { "type": "date",    "required": false },
+        "Notes":           { "type": "string",  "required": false },
+        "Related Gig":     { "type": "integer", "required": false },
+        "Related Contact": { "type": "integer", "required": false },
+        "Related Company": { "type": "integer", "required": false }
+      }
+    },
+    "Lookups": {
+      "description": "Reference/dropdown values. Do not modify.",
+      "fields": {
+        "YesNo": { "valid_values": ["Yes", "No"] },
+        "Call":  { "valid_values": ["Held", "Planned", "Not Held"] },
+        "Gig":   { "valid_values": ["Gig", "Lead"] }
+      }
+    }
+  },
+  "dedup_rules": {
+    "Companies": "Normalized company name + state (case-insensitive)",
+    "Contacts": "Normalized email address (case-insensitive); contacts with no email cannot be deduped"
+  },
+  "audit_events": ["LEAD_CREATED", "LEAD_UPDATED", "EMAIL_SENT", "REPLY_RECEIVED", "OPT_OUT", "BOUNCE", "MEETING_BOOKED", "SHOW_BOOKED"]
+}

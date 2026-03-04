@@ -1,0 +1,8 @@
+email,provider,label
+# 25-seed list for inbox placement testing.
+# Add one seed address per row before running placement tests.
+# Use at least one address from each major provider:
+# Gmail, Outlook/Hotmail, Yahoo, Zoho, iCloud, plus any domain-specific addresses.
+# Example:
+# seed1@gmail.com,Gmail,seed_gmail_1
+# seed2@outlook.com,Outlook,seed_outlook_1

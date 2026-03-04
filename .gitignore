@@ -1,0 +1,34 @@
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Data files with real contact data (never commit)
+data/crm/leads.xlsx
+data/crm/contacts_live.xlsx
+data/crm/*.live.*
+config/suppression_list_live.csv
+
+# Audit database (may contain PII)
+data/audit.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
